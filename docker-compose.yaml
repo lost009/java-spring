@@ -1,0 +1,7 @@
+services:
+  bankpro-app:
+    image: 525881110319.dkr.ecr.ap-south-1.amazonaws.com/java:latest
+    container_name: bankpro-app
+    ports:
+      - "8000:8080"
+    restart: unless-stopped
