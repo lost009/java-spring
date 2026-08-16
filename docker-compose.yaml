@@ -1,6 +1,7 @@
 services:
   bankpro-app:
     image: public.ecr.aws/i4q7m0q0/java:latest
+    pull_policy: always
     container_name: bankpro-app
     ports:
       - "8000:8080"
