@@ -1,0 +1,90 @@
+pipeline {
+
+    agent any
+
+    triggers {
+        githubPush()
+    }
+
+    environment {
+        AWS_REGION = "us-east-1"
+        ECR_REPO   = "java"
+        IMAGE_TAG  = "latest"
+
+        ECR_URL = "public.ecr.aws/i4q7m0q0/${ECR_REPO}"
+    }
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/lost009/java-spring.git'
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                sh '''
+                    mvn clean install -DskipTests
+                '''
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh '''
+                    docker build -t ${ECR_REPO}:${IMAGE_TAG} .
+                '''
+            }
+        }
+
+        stage('Login to ECR') {
+            steps {
+                sh '''
+                    aws ecr-public get-login-password --region ${AWS_REGION} \
+                    | docker login \
+                    --username AWS \
+                    --password-stdin public.ecr.aws/i4q7m0q0
+                '''
+            }
+        }
+
+        stage('Tag Docker Image') {
+            steps {
+                sh '''
+                    docker tag ${ECR_REPO}:${IMAGE_TAG} ${ECR_URL}:${IMAGE_TAG}
+                '''
+            }
+        }
+
+        stage('Push Image to ECR') {
+            steps {
+                sh '''
+                    docker push ${ECR_URL}:${IMAGE_TAG}
+                '''
+            }
+        }
+
+        stage('Deploy on AWS EC2 and Azure VM') {
+            steps {
+                dir('./ansible') {
+                    sh '''
+                        ansible-playbook -i inventory playbook.yaml
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+
+        success {
+            echo "Docker image pushed successfully: ${ECR_URL}:${IMAGE_TAG}"
+        }
+
+        failure {
+            echo "Pipeline failed"
+        }
+    }
+}
