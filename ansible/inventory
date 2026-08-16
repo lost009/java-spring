@@ -1,6 +1,6 @@
 [app_servers]
 app1 ansible_host=13.204.64.141 ansible_user=ubuntu ansible_ssh_private_key_file=/khanna.pem
-app2 ansible_host=172.204.216.53 ansible_user=ubuntu ansible_ssh_private_key_file=/khanna.pem
+app2 ansible_host=172.204.216.53 ansible_user=azureuser ansible_ssh_private_key_file=/khanna.pem
 [all:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
