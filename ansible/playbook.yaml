@@ -1,0 +1,24 @@
+---
+- name: Deploy Docker Compose application
+  hosts: app_servers
+  become: true
+
+  tasks:
+
+    - name: Copy docker-compose.yml to remote server
+      ansible.builtin.copy:
+        src: "/home/ubuntu/java-spring/docker-compose.yaml"
+        dest: /home/ubuntu/docker-compose.yml
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+    - name: Stop existing containers
+      ansible.builtin.command:
+        cmd: docker compose down
+        chdir: /home/ubuntu
+      ignore_errors: true
+
+    - name: Start containers
+      ansible.builtin.command:
+        cmd: docker compose up -d
+        chdir: /home/ubuntu

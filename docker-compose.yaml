@@ -1,6 +1,6 @@
 services:
   bankpro-app:
-    image: 525881110319.dkr.ecr.ap-south-1.amazonaws.com/java:latest
+    image: public.ecr.aws/i4q7m0q0/java:latest
     container_name: bankpro-app
     ports:
       - "8000:8080"
