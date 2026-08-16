@@ -7,7 +7,7 @@
 
     - name: Copy docker-compose.yml to remote server
       ansible.builtin.copy:
-        src: "/home/ubuntu/java-spring/docker-compose.yaml"
+        src: "./docker-compose.yaml"
         dest: /home/ubuntu/docker-compose.yml
         owner: ubuntu
         group: ubuntu
